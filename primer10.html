@@ -7,7 +7,11 @@
 </head>
 
 <body onload="load()";>
-
+    
+<div>
+<canvas id="canvas1" width ="200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>    
+</div>    
+    
 <div id="divZaIzpis"></div>    
 
 <br>
@@ -22,7 +26,11 @@ var štVrsticPredPomikom = 10;
 var števecIzpisanihVrstic = 0;
 
 var potVrednost1 = 0; // vrednost prvega potenciometra
-
+var x1 = new Array(); // polje za x1
+var y1 = new Array(); // polje za y1
+var canvas1;
+var ctx1;    
+    
 function log(sporočilo) {
     var node=document.createElement("tr"); // we create the variable node as the a table row (tr)
     var textnode=document.createTextNode(števecIzpisanihVrstic + " | " + sporočilo); // we create element with the text adding the counter
@@ -35,7 +43,18 @@ function log(sporočilo) {
 }
     
 function load() { // funkcija ki se požene, ko odpremo stran
-    log("html stran naložena")
+    canvas1 = document.getElementById("canvas1");
+    ctx1 = canvas1.getContext("2d");
+
+    // inicializacija grafa s točkami
+    ctx1.lineWidth = "1";
+    ctx1.strokeStyle = "#ff0000";
+    
+    // izrišemo prvo časovno vrsto za inicializacijo
+    for (var i=0; i<200; i++) {
+        x1[i] = i; // x vrednosti so 0, 1, 2, ...
+        y1[i] = 0; // y vrednosti so 0
+    }
 }
 
 var socket = io.connect("192.168.1.136:8080"); // povezava preko "socket"
@@ -46,6 +65,21 @@ socket.on("sporočiloKlientu", function (spo) {
     
 socket.on("klientBeriVrednosti", function(vrednost) {
     potVrednost1 = vrednost.želenaVrednost;
+    
+    // Izris grafa *****************************************
+
+    ctx1.lineWidth = "1";
+    ctx1.strokeStyle = "#ff0000";
+    ctx1.clearRect(0, 0, canvas1.width, canvas1.height); // brišemo platno
+    ctx1.beginPath(); // pričnemo z izrisom črte
+    y1.splice(0, 1); // na poziciji 0 v polju y1 izbrišemo eno vrednost
+    y1[199] = potVrednost1; // nova vrednost je dodana na koncu
+    for (var i=0; i<200; i++) {
+        ctx1.lineTo(x1[i], (100 - (y1[i] / 1023) * 100)); // 0,0 x,y coordinata je v zg. l. kotu
+    }
+    ctx1.stroke(); // za prikaz črte
+    // Konec izrisa grafa ***********************************
+    
     log(vrednost.želenaVrednost);
 });
 
