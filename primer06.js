@@ -3,10 +3,10 @@ var firmata = require("firmata");
 var io = require("socket.io").listen(http); // knjižnica za vtičnike
 var fs = require("fs"); // knjižnica za delo z datotečnim sistemom ("file system fs")
 
-var board = new firmata.Board("/dev/ttyACM0", function(){// ACM (Abstract Control Model)
-                                                         // za serijsko komunikacijo z Arduinom (lahko je USB)
-    console.log("Priklop na Arduino");
-    board.pinMode(13, board.MODES.OUTPUT); // Posamezni pin konfiguriramo, da deluje kot vhod ali izhod
+var board = new firmata.Board("/dev/ttyACM0", function(){
+    console.log("Povezava na Arduino");
+    console.log("Aktiviramo Pin 13");
+    board.pinMode(13, board.MODES.OUTPUT); // pin13 kot izhod
 });
 
 function handler(req, res) { // "handler", ki je uporabljen pri require("http").createServer(handler)
